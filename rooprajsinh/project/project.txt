@@ -1,0 +1,454 @@
+import tkinter as tk
+from tkinter import messagebox
+import re
+
+
+# ---------------- PASSWORD CHECKER ---------------- #
+
+def check_password():
+    password = password_entry.get()
+
+    if password == "":
+        strength_label.config(text="Enter a password", fg="orange")
+        progress_bar.config(width=0)
+        return
+
+    score = 0
+
+    # 1. Check length
+    if len(password) >= 8:
+        score += 1
+        length_label.config(text="? At least 8 characters", fg="lime green")
+    else:
+        length_label.config(text="? At least 8 characters", fg="red")
+
+    # 2. Check uppercase
+    if re.search(r"[A-Z]", password):
+        score += 1
+        upper_label.config(text="? Contains uppercase letter", fg="lime green")
+    else:
+        upper_label.config(text="? Contains uppercase letter", fg="red")
+
+    # 3. Check lowercase
+    if re.search(r"[a-z]", password):
+        score += 1
+        lower_label.config(text="? Contains lowercase letter", fg="lime green")
+    else:
+        lower_label.config(text="? Contains lowercase letter", fg="red")
+
+    # 4. Check number
+    if re.search(r"[0-9]", password):
+        score += 1
+        number_label.config(text="? Contains a number", fg="lime green")
+    else:
+        number_label.config(text="? Contains a number", fg="red")
+
+    # 5. Check special character
+    if re.search(r"[^A-Za-z0-9]", password):
+        score += 1
+        special_label.config(
+            text="? Contains special character", fg="lime green"
+        )
+    else:
+        special_label.config(
+            text="? Contains special character", fg="red"
+        )
+
+    # ---------------- STRENGTH ---------------- #
+
+    if score <= 1:
+        strength = "Very Weak"
+        color = "red"
+        bar_width = 80
+
+    elif score == 2:
+        strength = "Weak"
+        color = "red"
+        bar_width = 150
+
+    elif score == 3:
+        strength = "Medium"
+        color = "orange"
+        bar_width = 230
+
+    elif score == 4:
+        strength = "Strong"
+        color = "yellow"
+        bar_width = 310
+
+    else:
+        strength = "Very Strong"
+        color = "lime green"
+        bar_width = 390
+
+    strength_label.config(text=strength, fg=color)
+    score_label.config(text=f"Score: {score}/5")
+
+    progress_bar.config(
+        width=bar_width,
+        bg=color
+    )
+
+
+# ---------------- SHOW / HIDE PASSWORD ---------------- #
+
+def show_password():
+    if password_entry.cget("show") == "*":
+        password_entry.config(show="")
+        show_button.config(text="Hide")
+    else:
+        password_entry.config(show="*")
+        show_button.config(text="Show")
+
+
+# ---------------- CLEAR ---------------- #
+
+def clear_password():
+    password_entry.delete(0, tk.END)
+
+    strength_label.config(
+        text="Password Strength",
+        fg="white"
+    )
+
+    score_label.config(text="Score: 0/5")
+
+    progress_bar.config(width=0)
+
+    length_label.config(
+        text="? At least 8 characters",
+        fg="lightgray"
+    )
+
+    upper_label.config(
+        text="? Contains uppercase letter",
+        fg="lightgray"
+    )
+
+    lower_label.config(
+        text="? Contains lowercase letter",
+        fg="lightgray"
+    )
+
+    number_label.config(
+        text="? Contains a number",
+        fg="lightgray"
+    )
+
+    special_label.config(
+        text="? Contains special character",
+        fg="lightgray"
+    )
+
+
+# ---------------- MAIN WINDOW ---------------- #
+
+root = tk.Tk()
+
+root.title("Password Strength Checker")
+root.geometry("600x650")
+root.resizable(False, False)
+
+# Dark background
+root.configure(bg="#0b1118")
+
+
+# ---------------- TITLE ---------------- #
+
+title = tk.Label(
+    root,
+    text="Password Strength Checker",
+    font=("Segoe UI", 25, "bold"),
+    bg="#0b1118",
+    fg="white"
+)
+
+title.pack(pady=(35, 5))
+
+
+subtitle = tk.Label(
+    root,
+    text="Check how strong your password is",
+    font=("Segoe UI", 11),
+    bg="#0b1118",
+    fg="gray"
+)
+
+subtitle.pack(pady=(0, 25))
+
+
+# ---------------- MAIN CARD ---------------- #
+
+card = tk.Frame(
+    root,
+    bg="#142231",
+    width=520,
+    height=450
+)
+
+card.pack(padx=40, fill="both", expand=True)
+
+card.pack_propagate(False)
+
+
+# Password title
+
+password_title = tk.Label(
+    card,
+    text="PASSWORD",
+    font=("Segoe UI", 11, "bold"),
+    bg="#142231",
+    fg="lightgray"
+)
+
+password_title.pack(anchor="w", padx=35, pady=(30, 8))
+
+
+# Password entry frame
+
+entry_frame = tk.Frame(
+    card,
+    bg="#142231"
+)
+
+entry_frame.pack(fill="x", padx=35)
+
+
+password_entry = tk.Entry(
+    entry_frame,
+    font=("Segoe UI", 14),
+    show="*",
+    bg="#f0f3f5",
+    fg="#111111",
+    relief="flat"
+)
+
+password_entry.pack(
+    side="left",
+    fill="x",
+    expand=True,
+    ipady=9
+)
+
+
+show_button = tk.Button(
+    entry_frame,
+    text="Show",
+    command=show_password,
+    font=("Segoe UI", 10, "bold"),
+    bg="#24384c",
+    fg="white",
+    relief="flat",
+    padx=15,
+    cursor="hand2"
+)
+
+show_button.pack(
+    side="right",
+    padx=(8, 0),
+    ipady=7
+)
+
+
+# ---------------- STRENGTH METER ---------------- #
+
+strength_label = tk.Label(
+    card,
+    text="Password Strength",
+    font=("Segoe UI", 16, "bold"),
+    bg="#142231",
+    fg="white"
+)
+
+strength_label.pack(
+    anchor="w",
+    padx=35,
+    pady=(25, 5)
+)
+
+
+score_label = tk.Label(
+    card,
+    text="Score: 0/5",
+    font=("Segoe UI", 10),
+    bg="#142231",
+    fg="gray"
+)
+
+score_label.pack(
+    anchor="w",
+    padx=35
+)
+
+
+# Meter background
+
+meter_background = tk.Frame(
+    card,
+    bg="#344250",
+    height=12,
+    width=390
+)
+
+meter_background.pack(
+    anchor="w",
+    padx=35,
+    pady=(10, 20)
+)
+
+meter_background.pack_propagate(False)
+
+
+# Actual progress bar
+
+progress_bar = tk.Frame(
+    meter_background,
+    bg="red",
+    height=12,
+    width=0
+)
+
+progress_bar.place(
+    x=0,
+    y=0
+)
+
+
+# ---------------- REQUIREMENTS ---------------- #
+
+requirements_title = tk.Label(
+    card,
+    text="Requirements",
+    font=("Segoe UI", 14, "bold"),
+    bg="#142231",
+    fg="white"
+)
+
+requirements_title.pack(
+    anchor="w",
+    padx=35,
+    pady=(5, 8)
+)
+
+
+length_label = tk.Label(
+    card,
+    text="? At least 8 characters",
+    font=("Segoe UI", 11),
+    bg="#142231",
+    fg="lightgray"
+)
+
+length_label.pack(anchor="w", padx=35, pady=3)
+
+
+upper_label = tk.Label(
+    card,
+    text="? Contains uppercase letter",
+    font=("Segoe UI", 11),
+    bg="#142231",
+    fg="lightgray"
+)
+
+upper_label.pack(anchor="w", padx=35, pady=3)
+
+
+lower_label = tk.Label(
+    card,
+    text="? Contains lowercase letter",
+    font=("Segoe UI", 11),
+    bg="#142231",
+    fg="lightgray"
+)
+
+lower_label.pack(anchor="w", padx=35, pady=3)
+
+
+number_label = tk.Label(
+    card,
+    text="? Contains a number",
+    font=("Segoe UI", 11),
+    bg="#142231",
+    fg="lightgray"
+)
+
+number_label.pack(anchor="w", padx=35, pady=3)
+
+
+special_label = tk.Label(
+    card,
+    text="? Contains special character",
+    font=("Segoe UI", 11),
+    bg="#142231",
+    fg="lightgray"
+)
+
+special_label.pack(anchor="w", padx=35, pady=3)
+
+
+# ---------------- BUTTONS ---------------- #
+
+button_frame = tk.Frame(
+    card,
+    bg="#142231"
+)
+
+button_frame.pack(
+    pady=22
+)
+
+
+check_button = tk.Button(
+    button_frame,
+    text="Check Password",
+    command=check_password,
+    font=("Segoe UI", 11, "bold"),
+    bg="#18b89a",
+    fg="white",
+    activebackground="#13977f",
+    relief="flat",
+    padx=20,
+    pady=9,
+    cursor="hand2"
+)
+
+check_button.pack(
+    side="left",
+    padx=5
+)
+
+
+clear_button = tk.Button(
+    button_frame,
+    text="Clear",
+    command=clear_password,
+    font=("Segoe UI", 11, "bold"),
+    bg="#34495e",
+    fg="white",
+    relief="flat",
+    padx=20,
+    pady=9,
+    cursor="hand2"
+)
+
+clear_button.pack(
+    side="left",
+    padx=5
+)
+
+
+# ---------------- FOOTER ---------------- #
+
+footer = tk.Label(
+    root,
+    text="Python + Tkinter + Regular Expressions",
+    font=("Segoe UI", 9),
+    bg="#0b1118",
+    fg="#718091"
+)
+
+footer.pack(pady=15)
+
+
+# Start application
+root.mainloop()
