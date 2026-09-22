@@ -1,4 +1,5 @@
 # Password Strength Checker
+<img src="checker.jpg>
 
 A simple yet effective password strength checker built with Python and Tkinter. This application provides real-time feedback on password security with visual indicators and detailed requirements.
 
